@@ -9,6 +9,9 @@ import (
 
 func SetupRoutes(router *gin.Engine) {
 	// Admin routes
+	// Add this line in the SetupRoutes function
+	router.POST("/create-library", controllers.CreateLibrary)
+	router.POST("/create-user", controllers.CreateUser)
 	admin := router.Group("/admin")
 	admin.Use(middleware.AuthMiddleware("admin")) // Only Admins can access these routes
 	{

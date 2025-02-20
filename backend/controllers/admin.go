@@ -162,3 +162,40 @@ func RejectRequest(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Request rejected successfully!"})
 }
+
+func CreateUser(c *gin.Context) {
+	var user models.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Create the user
+	if err := database.DB.Create(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User created successfully",
+		"user":    user,
+	})
+}
+func CreateLibrary(c *gin.Context) {
+	var library models.Library
+	if err := c.ShouldBindJSON(&library); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Create the library
+	if err := database.DB.Create(&library).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create library"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Library created successfully",
+		"library": library,
+	})
+}

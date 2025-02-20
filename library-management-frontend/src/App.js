@@ -13,6 +13,7 @@ import RemoveBook from './pages/RemoveBook';
 import UpdateBook from './pages/UpdateBook';
 import ListIssueRequests from './pages/ListIssueRequests';
 import ReaderProfile from './pages/ReaderProfile';
+import Register from './pages/Register';
 function App() {
   return (
     <Router>
@@ -29,6 +30,7 @@ function App() {
             <Route path="/admin/list-issue-requests" element={<ListIssueRequests />} />
             <Route path="/reader/books" element={<ViewAllBooks />} />
             <Route path="/admin/add-book" element={<AddBook />} />
+            <Route path="/register" element={<Register />} />
             {/* More routes will be added later */}
           </Routes>
         </main>

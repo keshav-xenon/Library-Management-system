@@ -9,15 +9,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// AuthMiddleware validates the user's email and role
 func AuthMiddleware(requiredRole string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		email := c.GetHeader("Authorization")
-		if email == "" {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
 			c.Abort()
 			return
 		}
+
+		// Extract email from Bearer token
+		bearerToken := strings.Split(authHeader, "Bearer ")
+		if len(bearerToken) != 2 {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization format"})
+			c.Abort()
+			return
+		}
+
+		email := strings.TrimSpace(bearerToken[1])
 
 		var user models.User
 		if err := database.DB.Where("email = ?", email).First(&user).Error; err != nil {
@@ -32,7 +41,6 @@ func AuthMiddleware(requiredRole string) gin.HandlerFunc {
 			return
 		}
 
-		// Add user info to the context
 		c.Set("user", user)
 		c.Next()
 	}
