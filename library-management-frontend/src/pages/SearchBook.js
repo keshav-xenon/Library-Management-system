@@ -1,94 +1,65 @@
-import React, { useState } from 'react';
-import api from '../services/api';
-import '../styles/form.css';
+import React, { useState } from "react";
+import api from "../services/api";
+import "../styles/search.css";
 
-const SearchBook = () => {
-  const [query, setQuery] = useState({
-    title: '',
-    author: '',
-    publisher: '',
-  });
-  const [results, setResults] = useState([]);
-  const [error, setError] = useState('');
+function SearchBook() {
+  const [query, setQuery] = useState({ title: "", author: "", publisher: "" });
+  const [books, setBooks] = useState([]);
 
-  const handleChange = (e) => {
-    setQuery({
-      ...query,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.get('/reader/search-book', {
+      const response = await api.get("/reader/search-book", {
         params: query,
       });
-      setResults(response.data);
-      setError('');
+      setBooks(response.data);
     } catch (err) {
-      setError('Failed to search for books. Please try again.');
-      setResults([]);
+      console.error("Failed to search books");
     }
   };
 
   return (
-    <div className="form-container">
-      <form className="form" onSubmit={handleSubmit}>
-        <h2>Search for a Book</h2>
-        {error && <div className="error-message">{error}</div>}
+    <div className="search-container">
+      <h2>Search Book</h2>
+      <form onSubmit={handleSearch}>
         <div className="form-group">
-          <label htmlFor="title">Title:</label>
+          <label>Title</label>
           <input
             type="text"
-            id="title"
-            name="title"
             value={query.title}
-            onChange={handleChange}
+            onChange={(e) => setQuery({ ...query, title: e.target.value })}
           />
         </div>
         <div className="form-group">
-          <label htmlFor="author">Author:</label>
+          <label>Author</label>
           <input
             type="text"
-            id="author"
-            name="author"
             value={query.author}
-            onChange={handleChange}
+            onChange={(e) => setQuery({ ...query, author: e.target.value })}
           />
         </div>
         <div className="form-group">
-          <label htmlFor="publisher">Publisher:</label>
+          <label>Publisher</label>
           <input
             type="text"
-            id="publisher"
-            name="publisher"
             value={query.publisher}
-            onChange={handleChange}
+            onChange={(e) => setQuery({ ...query, publisher: e.target.value })}
           />
         </div>
-        <button type="submit" className="submit-button">
-          Search
-        </button>
+        <button type="submit">Search</button>
       </form>
-      {results.length > 0 && (
-        <div className="results-container">
-          <h3>Search Results:</h3>
-          <ul>
-            {results.map((book) => (
-              <li key={book.ISBN}>
-                <strong>{book.Title}</strong> by {book.Authors} - {book.Publisher} (Available Copies: {book.AvailableCopies})
-                <button onClick={() => handleRaiseRequest(book.ISBN)}>Raise Issue Request</button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="book-list">
+        {books.map((book) => (
+          <div key={book.isbn} className="book-item">
+            <h3>{book.title}</h3>
+            <p>Author: {book.authors}</p>
+            <p>Publisher: {book.publisher}</p>
+            <p>Available Copies: {book.availableCopies}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
-};
-
-
-
+}
 
 export default SearchBook;

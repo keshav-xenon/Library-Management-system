@@ -1,102 +1,82 @@
-import React, { useEffect, useState } from 'react';
-import api from '../services/api';
-import '../styles/list.css';
+import React, { useState } from "react";
+import api from "../services/api";
+import "../styles/form.css";
 
-const ListIssueRequests = () => {
-  const [requests, setRequests] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+function AddBook() {
+  const [book, setBook] = useState({
+    isbn: "",
+    title: "",
+    authors: "",
+    publisher: "",
+    totalCopies: 0,
+  });
+  const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    fetchRequests();
-  }, []);
-
-  const fetchRequests = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const response = await api.get('/admin/list-issue-requests');
-      setRequests(response.data);
-      setError('');
+      const response = await api.post("/admin/add-book", book);
+      setMessage(response.data.message);
     } catch (err) {
-      setError('Failed to fetch issue requests.');
-    }
-  };
-
-  const handleApprove = async (reqID) => {
-    try {
-      await api.post(`/admin/approve-request/${reqID}`);
-      setSuccess(`Request ${reqID} approved successfully!`);
-      setError('');
-      // Refresh the list after approval
-      fetchRequests();
-    } catch (err) {
-      setError('Failed to approve request. Please try again.');
-      setSuccess('');
-    }
-  };
-
-  const handleReject = async (reqID) => {
-    try {
-      await api.post(`/admin/reject-request/${reqID}`);
-      setSuccess(`Request ${reqID} rejected successfully!`);
-      setError('');
-      // Refresh the list after rejection
-      fetchRequests();
-    } catch (err) {
-      setError('Failed to reject request. Please try again.');
-      setSuccess('');
+      setMessage("Failed to add book");
     }
   };
 
   return (
-    <div className="list-container">
-      <h2>Issue Requests</h2>
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">{success}</div>}
-      <table className="request-table">
-        <thead>
-          <tr>
-            <th>Request ID</th>
-            <th>Book ID</th>
-            <th>Reader ID</th>
-            <th>Request Date</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {requests.length === 0 ? (
-            <tr>
-              <td colSpan="5" style={{ textAlign: 'center' }}>
-                No issue requests found
-              </td>
-            </tr>
-          ) : (
-            requests.map((request) => (
-              <tr key={request.ReqID}>
-                <td>{request.ReqID}</td>
-                <td>{request.BookID}</td>
-                <td>{request.ReaderID}</td>
-                <td>{new Date(request.RequestDate).toLocaleString()}</td>
-                <td>
-                  <button 
-                    onClick={() => handleApprove(request.ReqID)}
-                    disabled={request.ApprovalDate}
-                  >
-                    Approve
-                  </button>
-                  <button 
-                    onClick={() => handleReject(request.ReqID)}
-                    disabled={request.ApprovalDate}
-                  >
-                    Reject
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+    <div className="form-container">
+      <h2>Add Book</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>ISBN</label>
+          <input
+            type="text"
+            value={book.isbn}
+            onChange={(e) => setBook({ ...book, isbn: e.target.value })}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Title</label>
+          <input
+            type="text"
+            value={book.title}
+            onChange={(e) => setBook({ ...book, title: e.target.value })}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Authors</label>
+          <input
+            type="text"
+            value={book.authors}
+            onChange={(e) => setBook({ ...book, authors: e.target.value })}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Publisher</label>
+          <input
+            type="text"
+            value={book.publisher}
+            onChange={(e) => setBook({ ...book, publisher: e.target.value })}
+          />
+        </div>
+        <div className="form-group">
+          <label>Total Copies</label>
+          <input
+            type="number"
+            value={book.totalCopies}
+            onChange={(e) =>
+              setBook({ ...book, totalCopies: parseInt(e.target.value) })
+            }
+            required
+          />
+        </div>
+        <button type="submit">Add Book</button>
+        {message && <p>{message}</p>}
+      </form>
     </div>
   );
-};
+}
 
-export default ListIssueRequests;
+export default AddBook;

@@ -1,47 +1,39 @@
-import React, { useState } from 'react';
-import api from '../services/api';
-import '../styles/form.css';
+import React, { useState } from "react";
+import { removeBook } from "../services/api"; // Import the removeBook function
+import "../styles/form.css";
 
-const RemoveBook = () => {
-  const [isbn, setIsbn] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+function RemoveBook() {
+  const [isbn, setIsbn] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleRemove = async (e) => {
     e.preventDefault();
     try {
-      await api.delete(`/admin/remove-book/${isbn}`);
-      setSuccess('Book removed successfully!');
-      setError('');
-      setIsbn('');
+      const response = await removeBook(isbn); // Use the removeBook function
+      setMessage(response.message);
     } catch (err) {
-      setError('Failed to remove book. Please check the ISBN.');
-      setSuccess('');
+      setMessage(err.error || "Failed to remove book");
     }
   };
 
   return (
     <div className="form-container">
-      <form className="form" onSubmit={handleSubmit}>
-        <h2>Remove Book</h2>
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
+      <h2>Remove Book</h2>
+      <form onSubmit={handleRemove}>
         <div className="form-group">
-          <label htmlFor="isbn">ISBN:</label>
+          <label>ISBN</label>
           <input
             type="text"
-            id="isbn"
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
             required
           />
         </div>
-        <button type="submit" className="submit-button">
-          Remove Book
-        </button>
+        <button type="submit">Remove Book</button>
+        {message && <p>{message}</p>}
       </form>
     </div>
   );
-};
+}
 
 export default RemoveBook;

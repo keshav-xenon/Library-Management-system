@@ -1,49 +1,60 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import '../styles/register.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./../styles/register.css";
 
 const Register = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    contactNumber: '',
-    role: 'reader', // default role
-    libId: '' // Library ID
+    name: "",
+    email: "",
+    password: "",
+    role: "reader", // Default role is reader
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setMessage("");
+    setLoading(true);
+
     try {
-      const response = await api.post('/create-user', formData);
-      setSuccess('Registration successful! You can now log in.');
-      setError('');
-      navigate('/login'); // Redirect to login page after successful registration
+      const response = await fetch("http://localhost:8080/create-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage("User registered successfully!");
+        setTimeout(() => navigate("/"), 2000); // Redirect to login after 2 seconds
+      } else {
+        setError(data.error || "Failed to register user");
+      }
     } catch (err) {
-      setError('Registration failed. Please try again.');
-      setSuccess('');
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <h2>Register</h2>
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">{success}</div>}
-      
-      <form onSubmit={handleSubmit} className="auth-form">
+    <div className="form-container">
+      <form className="form" onSubmit={handleSubmit}>
+        <h2>Register</h2>
+        {message && <p className="success">{message}</p>}
+        {error && <p className="error">{error}</p>}
         <div className="form-group">
-          <label htmlFor="name">Name:</label>
+          <label htmlFor="name">Name</label>
           <input
             type="text"
             id="name"
@@ -53,9 +64,8 @@ const Register = () => {
             required
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
@@ -65,21 +75,19 @@ const Register = () => {
             required
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="contactNumber">Contact Number:</label>
+          <label htmlFor="password">Password</label>
           <input
-            type="tel"
-            id="contactNumber"
-            name="contactNumber"
-            value={formData.contactNumber}
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
             onChange={handleChange}
             required
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="role">Role:</label>
+          <label htmlFor="role">Role</label>
           <select
             id="role"
             name="role"
@@ -90,20 +98,9 @@ const Register = () => {
             <option value="admin">Admin</option>
           </select>
         </div>
-
-        <div className="form-group">
-          <label htmlFor="libId">Library ID:</label>
-          <input
-            type="text"
-            id="libId"
-            name="libId"
-            value={formData.libId}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <button type="submit" className="auth-button">Register</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
+        </button>
       </form>
     </div>
   );

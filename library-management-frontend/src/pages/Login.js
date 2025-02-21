@@ -1,67 +1,46 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { login } from '../services/auth';
-import '../styles/login.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+import "../styles/login.css";
 
-const Login = () => {
+function Login() {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: '',
-    role: 'reader'
-  });
-  const [error, setError] = useState('');
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await login(formData.email, formData.role);
-      navigate('/');
+      const response = await api.get("/reader/search-book", {
+        headers: { Authorization: `Bearer ${email}` },
+      });
+      if (response.status === 200) {
+        localStorage.setItem("userEmail", email);
+        navigate("/search-book");
+      }
     } catch (err) {
-      setError('Login failed. Please try again.');
+      setError("Invalid email or user not found");
     }
   };
 
   return (
     <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2>Login</h2>
-        {error && <div className="error-message">{error}</div>}
+      <h2>Login</h2>
+      <form onSubmit={handleLogin}>
         <div className="form-group">
-          <label htmlFor="email">Email:</label>
+          <label>Email</label>
           <input
             type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="role">Role:</label>
-          <select
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-          >
-            <option value="reader">Reader</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-        <button type="submit" className="login-button">
-          Login
-        </button>
+        <button type="submit">Login</button>
+        {error && <p className="error">{error}</p>}
       </form>
     </div>
   );
-};
+}
 
 export default Login;

@@ -1,137 +1,82 @@
-import React, { useState } from 'react';
-import api from '../services/api';
-import '../styles/form.css';
+import React, { useState } from "react";
+import { addBook } from "../services/api"; // Import the addBook function
+import "../styles/form.css";
 
-const AddBook = () => {
-  const [formData, setFormData] = useState({
-    isbn: '',
-    title: '',
-    authors: '',
-    publisher: '',
-    version: '',
-    totalCopies: '',
-    libId: '' // Assuming you have a way to get the library ID
+function AddBook() {
+  const [book, setBook] = useState({
+    isbn: "",
+    title: "",
+    authors: "",
+    publisher: "",
+    totalCopies: 0,
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/admin/add-book', formData);
-      setSuccess('Book added successfully!');
-      setError('');
-      setFormData({
-        isbn: '',
-        title: '',
-        authors: '',
-        publisher: '',
-        version: '',
-        totalCopies: '',
-        libId: ''
-      });
+      const response = await addBook(book); // Use the addBook function
+      setMessage(response.message);
     } catch (err) {
-      setError('Failed to add book. Please check your input.');
-      setSuccess('');
+      setMessage(err.error || "Failed to add book");
     }
   };
 
   return (
     <div className="form-container">
-      <form className="form" onSubmit={handleSubmit}>
-        <h2>Add New Book</h2>
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
+      <h2>Add Book</h2>
+      <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="isbn">ISBN:</label>
+          <label>ISBN</label>
           <input
             type="text"
-            id="isbn"
-            name="isbn"
-            value={formData.isbn}
-            onChange={handleChange}
+            value={book.isbn}
+            onChange={(e) => setBook({ ...book, isbn: e.target.value })}
             required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="title">Title:</label>
+          <label>Title</label>
           <input
             type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
+            value={book.title}
+            onChange={(e) => setBook({ ...book, title: e.target.value })}
             required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="authors">Authors:</label>
+          <label>Authors</label>
           <input
             type="text"
-            id="authors"
-            name="authors"
-            value={formData.authors}
-            onChange={handleChange}
+            value={book.authors}
+            onChange={(e) => setBook({ ...book, authors: e.target.value })}
             required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="publisher">Publisher:</label>
+          <label>Publisher</label>
           <input
             type="text"
-            id="publisher"
-            name="publisher"
-            value={formData.publisher}
-            onChange={handleChange}
-            required
+            value={book.publisher}
+            onChange={(e) => setBook({ ...book, publisher: e.target.value })}
           />
         </div>
         <div className="form-group">
-          <label htmlFor="version">Version:</label>
-          <input
-            type="text"
-            id="version"
-            name="version"
-            value={formData.version}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="totalCopies">Total Copies:</label>
+          <label>Total Copies</label>
           <input
             type="number"
-            id="totalCopies"
-            name="totalCopies"
-            value={formData.totalCopies}
-            onChange={handleChange}
+            value={book.totalCopies}
+            onChange={(e) =>
+              setBook({ ...book, totalCopies: parseInt(e.target.value) })
+            }
             required
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="libId">Library ID:</label>
-          <input
-            type="text"
-            id="libId"
-            name="libId"
-            value={formData.libId}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" className="submit-button">
-          Add Book
-        </button>
+        <button type="submit">Add Book</button>
+        {message && <p>{message}</p>}
       </form>
     </div>
   );
-};
+}
 
 export default AddBook;
