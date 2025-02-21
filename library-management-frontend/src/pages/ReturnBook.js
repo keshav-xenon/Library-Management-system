@@ -1,58 +1,92 @@
-import React, { useState } from 'react';
-import api from '../services/api';
-import '../styles/return.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "../styles/return.css"; // Add custom styles for the return page
 
 const ReturnBook = () => {
-  const [issueId, setIssueId] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [borrowedBooks, setBorrowedBooks] = useState([]);
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setSuccess('');
+  useEffect(() => {
+    // Fetch the list of borrowed books
+    const fetchBorrowedBooks = async () => {
+      const email = localStorage.getItem("email"); // Reader email from local storage
+      try {
+        const response = await axios.get("http://localhost:8080/reader/borrowed-books", {
+          headers: {
+            Authorization: `Bearer ${email}`, // Pass email as Bearer token
+          },
+        });
+        setBorrowedBooks(response.data);
+      } catch (error) {
+        setMessage(
+          error.response?.data?.error || "Failed to fetch borrowed books. Try again."
+        );
+      }
+    };
 
+    fetchBorrowedBooks();
+  }, []);
+
+  const handleReturnBook = async (issueID) => {
+    const email = localStorage.getItem("email");
     try {
-      await api.post(`/admin/return-book/${issueId}`);
-      setSuccess('Book return processed successfully!');
-      setIssueId('');
-    } catch (err) {
-      setError('Failed to process book return. Please check the Issue ID.');
-    } finally {
-      setLoading(false);
+      const response = await axios.post(
+        `http://localhost:8080/reader/return-book/${issueID}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${email}`,
+          },
+        }
+      );
+      setMessage(response.data.message);
+      setBorrowedBooks(borrowedBooks.filter((book) => book.IssueID !== issueID)); // Remove returned book
+    } catch (error) {
+      setMessage(
+        error.response?.data?.error || "Failed to return the book. Try again."
+      );
     }
   };
 
   return (
     <div className="return-container">
-      <h2>Process Book Return</h2>
-      
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">{success}</div>}
-
-      <form onSubmit={handleSubmit} className="return-form">
-        <div className="form-group">
-          <label htmlFor="issueId">Issue ID:</label>
-          <input
-            type="text"
-            id="issueId"
-            value={issueId}
-            onChange={(e) => setIssueId(e.target.value)}
-            required
-            placeholder="Enter Issue ID"
-          />
-        </div>
-
-        <button 
-          type="submit" 
-          className="submit-button"
-          disabled={loading || !issueId}
-        >
-          {loading ? 'Processing...' : 'Process Return'}
-        </button>
-      </form>
+      <h1>Return Book</h1>
+      {message && <p className="message">{message}</p>}
+      <div className="borrowed-books-list">
+        {borrowedBooks.length > 0 ? (
+          <table className="borrowed-books-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Issue Date</th>
+                <th>Expected Return Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {borrowedBooks.map((book) => (
+                <tr key={book.IssueID}>
+                  <td>{book.Title}</td>
+                  <td>{book.Authors}</td>
+                  <td>{book.IssueDate}</td>
+                  <td>{book.ExpectedReturnDate}</td>
+                  <td>
+                    <button
+                      className="return-button"
+                      onClick={() => handleReturnBook(book.IssueID)}
+                    >
+                      Return
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>No borrowed books found</p>
+        )}
+      </div>
     </div>
   );
 };

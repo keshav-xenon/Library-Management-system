@@ -1,82 +1,112 @@
 import React, { useState } from "react";
-import { addBook } from "../services/api"; // Import the addBook function
-import "../styles/form.css";
+import axios from "axios";
+import "../styles/form.css"; // Add custom styles for the form
 
-function AddBook() {
-  const [book, setBook] = useState({
-    isbn: "",
-    title: "",
-    authors: "",
-    publisher: "",
-    totalCopies: 0,
-  });
+const AddBook = () => {
+  const [isbn, setIsbn] = useState("");
+  const [title, setTitle] = useState("");
+  const [authors, setAuthors] = useState("");
+  const [publisher, setPublisher] = useState("");
+  const [version, setVersion] = useState("");
+  const [totalCopies, setTotalCopies] = useState(1);
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleAddBook = async (e) => {
     e.preventDefault();
+
+    const email = localStorage.getItem("email"); // Get admin email from local storage
+    const bookData = {
+      ISBN: isbn,
+      Title: title,
+      Authors: authors,
+      Publisher: publisher,
+      Version: version,
+      TotalCopies: totalCopies,
+      AvailableCopies: totalCopies,
+    };
+
     try {
-      const response = await addBook(book); // Use the addBook function
-      setMessage(response.message);
-    } catch (err) {
-      setMessage(err.error || "Failed to add book");
+      const response = await axios.post(
+        "http://localhost:8080/admin/add-book",
+        bookData,
+        {
+          headers: {
+            Authorization: `Bearer ${email}`, // Pass email as Bearer token
+          },
+        }
+      );
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage(
+        error.response?.data?.error || "Failed to add the book. Try again."
+      );
     }
   };
 
   return (
     <div className="form-container">
-      <h2>Add Book</h2>
-      <form onSubmit={handleSubmit}>
+      <h1>Add a New Book</h1>
+      <form onSubmit={handleAddBook}>
         <div className="form-group">
-          <label>ISBN</label>
+          <label>ISBN:</label>
           <input
             type="text"
-            value={book.isbn}
-            onChange={(e) => setBook({ ...book, isbn: e.target.value })}
+            value={isbn}
+            onChange={(e) => setIsbn(e.target.value)}
             required
           />
         </div>
         <div className="form-group">
-          <label>Title</label>
+          <label>Title:</label>
           <input
             type="text"
-            value={book.title}
-            onChange={(e) => setBook({ ...book, title: e.target.value })}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
           />
         </div>
         <div className="form-group">
-          <label>Authors</label>
+          <label>Authors:</label>
           <input
             type="text"
-            value={book.authors}
-            onChange={(e) => setBook({ ...book, authors: e.target.value })}
+            value={authors}
+            onChange={(e) => setAuthors(e.target.value)}
             required
           />
         </div>
         <div className="form-group">
-          <label>Publisher</label>
+          <label>Publisher:</label>
           <input
             type="text"
-            value={book.publisher}
-            onChange={(e) => setBook({ ...book, publisher: e.target.value })}
+            value={publisher}
+            onChange={(e) => setPublisher(e.target.value)}
           />
         </div>
         <div className="form-group">
-          <label>Total Copies</label>
+          <label>Version:</label>
+          <input
+            type="text"
+            value={version}
+            onChange={(e) => setVersion(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Total Copies:</label>
           <input
             type="number"
-            value={book.totalCopies}
-            onChange={(e) =>
-              setBook({ ...book, totalCopies: parseInt(e.target.value) })
-            }
+            value={totalCopies}
+            onChange={(e) => setTotalCopies(e.target.value)}
+            min="1"
             required
           />
         </div>
-        <button type="submit">Add Book</button>
-        {message && <p>{message}</p>}
+        <button type="submit" className="form-button">
+          Add Book
+        </button>
       </form>
+      {message && <p className="message">{message}</p>}
     </div>
   );
-}
+};
 
 export default AddBook;

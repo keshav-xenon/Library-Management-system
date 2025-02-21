@@ -1,107 +1,120 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./../styles/register.css";
+import axios from "axios";
+import "../styles/register.css"; // Custom styles for the register page
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "reader", // Default role is reader
-  });
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [role, setRole] = useState("");
+  const [libID, setLibID] = useState("");
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    setError("");
-    setMessage("");
-    setLoading(true);
+
+    // Validate required fields
+    if (!name || !email || !role || !libID) {
+      setError("Please fill in all required fields.");
+      return;
+    }
 
     try {
-      const response = await fetch("http://localhost:8080/create-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      // Call the backend API to create a user
+      const response = await axios.post("http://localhost:8080/create-user", {
+        name,
+        email,
+        contactNumber,
+        role,
+        libID,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage("User registered successfully!");
-        setTimeout(() => navigate("/"), 2000); // Redirect to login after 2 seconds
-      } else {
-        setError(data.error || "Failed to register user");
+      if (response.status === 200) {
+        setSuccess("User registered successfully!");
+        setError("");
+        // Redirect to login page after successful registration
+        setTimeout(() => navigate("/"), 2000);
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
+      setError("Failed to register user. Please try again.");
+      setSuccess("");
     }
   };
 
   return (
-    <div className="form-container">
-      <form className="form" onSubmit={handleSubmit}>
-        <h2>Register</h2>
-        {message && <p className="success">{message}</p>}
-        {error && <p className="error">{error}</p>}
-        <div className="form-group">
-          <label htmlFor="name">Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="role">Role</label>
-          <select
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-          >
-            <option value="reader">Reader</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Registering..." : "Register"}
-        </button>
-      </form>
+    <div className="register-container">
+      <div className="register-card">
+        <h1 className="register-title">Create an Account</h1>
+        <form onSubmit={handleRegister} className="register-form">
+          <div className="form-group">
+            <label htmlFor="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="contactNumber">Contact Number:</label>
+            <input
+              type="text"
+              id="contactNumber"
+              value={contactNumber}
+              onChange={(e) => setContactNumber(e.target.value)}
+              placeholder="Enter your contact number"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="role">Role:</label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="">Select Role</option>
+              <option value="admin">Admin</option>
+              <option value="reader">Reader</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="libID">Library ID:</label>
+            <input
+              type="text"
+              id="libID"
+              value={libID}
+              onChange={(e) => setLibID(e.target.value)}
+              placeholder="Enter your library ID"
+              required
+            />
+          </div>
+          {error && <p className="error-message">{error}</p>}
+          {success && <p className="success-message">{success}</p>}
+          <button type="submit" className="register-button">
+            Register
+          </button>
+        </form>
+        <p className="login-link">
+          Already have an account? <span onClick={() => navigate("/")}>Login here</span>
+        </p>
+      </div>
     </div>
   );
 };

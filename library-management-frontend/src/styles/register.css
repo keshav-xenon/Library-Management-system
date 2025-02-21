@@ -1,76 +1,102 @@
-.auth-container {
-    max-width: 400px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .auth-container h2 {
-    text-align: center;
-    color: #2563eb;
-    margin-bottom: 1.5rem;
-  }
-  
-  .auth-form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #374151;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-  
-  .auth-button {
-    background-color: #2563eb;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s;
-  }
-  
-  .auth-button:hover {
-    background-color: #1d4ed8;
-  }
-  
-  .error-message {
-    background-color: #fee2e2;
-    color: #dc2626;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-  }
-  
-  .success-message {
-    background-color: #dcfce7;
-    color: #16a34a;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-  }
-  
-  @media (max-width: 768px) {
-    .auth-container {
-      padding: 1rem;
-      width: 90%;
-    }
-  }
+/* Register container */
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #3498db, #2ecc71);
+  font-family: "Arial", sans-serif;
+}
+
+/* Register card */
+.register-card {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* Register title */
+.register-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+/* Form group */
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+/* Form labels */
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #34495e;
+}
+
+/* Form inputs */
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* Error and success messages */
+.error-message {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: #2ecc71;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Register button */
+.register-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #3498db;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-button:hover {
+  background-color: #2980b9;
+}
+
+/* Login link */
+.login-link {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #34495e;
+}
+
+.login-link span {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-link span:hover {
+  text-decoration: underline;
+}

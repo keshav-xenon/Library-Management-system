@@ -1,88 +1,41 @@
 .books-container {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
 }
 
-.books-container h2 {
+h1 {
   text-align: center;
-  color: #333;
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 }
 
-.books-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+.message {
+  text-align: center;
+  font-weight: bold;
+  color: red;
+  margin-top: 20px;
 }
 
-.book-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.2s;
+.books-list {
+  margin-top: 20px;
 }
 
-.book-card:hover {
-  transform: translateY(-4px);
-}
-
-.book-info h3 {
-  color: #2563eb;
-  margin-bottom: 1rem;
-  font-size: 1.25rem;
-}
-
-.book-info p {
-  color: #4b5563;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-}
-
-.book-actions {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.issue-button {
+.books-table {
   width: 100%;
-  padding: 0.75rem;
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-weight: 500;
+  border-collapse: collapse;
 }
 
-.issue-button:hover:not(:disabled) {
-  background-color: #1d4ed8;
-}
-
-.issue-button:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
-}
-
-.loading {
+.books-table th,
+.books-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
   text-align: center;
-  padding: 2rem;
-  color: #6b7280;
-  font-size: 1.1rem;
 }
 
-@media (max-width: 768px) {
-  .books-container {
-    padding: 1rem;
-  }
-
-  .books-grid {
-    grid-template-columns: 1fr;
-  }
+.books-table th {
+  background-color: #007bff;
+  color: white;
 }

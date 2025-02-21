@@ -1,120 +1,96 @@
 import React, { useState } from "react";
+import axios from "axios";
+import "../styles/form.css";
 
 const UpdateBook = () => {
   const [isbn, setIsbn] = useState("");
-  const [formData, setFormData] = useState({
+  const [bookDetails, setBookDetails] = useState({
     title: "",
     authors: "",
     publisher: "",
     version: "",
   });
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setBookDetails({ ...bookDetails, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleUpdateBook = async (e) => {
     e.preventDefault();
-    setError("");
-    setMessage("");
-    setLoading(true);
-
     try {
-      const response = await fetch(`http://localhost:8080/admin/update-book/${isbn}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer admin@example.com`, // Replace with actual admin email or token
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage("Book updated successfully!");
-        setIsbn("");
-        setFormData({
-          title: "",
-          authors: "",
-          publisher: "",
-          version: "",
-        });
-      } else {
-        setError(data.error || "Failed to update book");
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
+      const response = await axios.put(
+        `http://localhost:8080/admin/update-book/${isbn}`,
+        bookDetails,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage(
+        error.response?.data?.error || "Failed to update the book. Try again."
+      );
     }
   };
 
   return (
     <div className="form-container">
-      <form className="form" onSubmit={handleSubmit}>
-        <h2>Update Book</h2>
-        {message && <p className="success">{message}</p>}
-        {error && <p className="error">{error}</p>}
+      <h1>Update Book</h1>
+      <form onSubmit={handleUpdateBook}>
         <div className="form-group">
-          <label htmlFor="isbn">ISBN</label>
+          <label>ISBN:</label>
           <input
             type="text"
-            id="isbn"
-            name="isbn"
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
             required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="title">Title</label>
+          <label>Title:</label>
           <input
             type="text"
-            id="title"
             name="title"
-            value={formData.title}
-            onChange={handleChange}
+            value={bookDetails.title}
+            onChange={handleInputChange}
           />
         </div>
         <div className="form-group">
-          <label htmlFor="authors">Authors</label>
+          <label>Authors:</label>
           <input
             type="text"
-            id="authors"
             name="authors"
-            value={formData.authors}
-            onChange={handleChange}
+            value={bookDetails.authors}
+            onChange={handleInputChange}
           />
         </div>
         <div className="form-group">
-          <label htmlFor="publisher">Publisher</label>
+          <label>Publisher:</label>
           <input
             type="text"
-            id="publisher"
             name="publisher"
-            value={formData.publisher}
-            onChange={handleChange}
+            value={bookDetails.publisher}
+            onChange={handleInputChange}
           />
         </div>
         <div className="form-group">
-          <label htmlFor="version">Version</label>
+          <label>Version:</label>
           <input
             type="text"
-            id="version"
             name="version"
-            value={formData.version}
-            onChange={handleChange}
+            value={bookDetails.version}
+            onChange={handleInputChange}
           />
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Updating..." : "Update Book"}
+        <button type="submit" className="form-button">
+          Update Book
         </button>
       </form>
+      {message && <p className="message">{message}</p>}
     </div>
   );
 };

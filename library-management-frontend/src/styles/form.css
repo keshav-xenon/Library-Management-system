@@ -1,13 +1,13 @@
 .form-container {
-  max-width: 400px;
+  max-width: 500px;
   margin: 50px auto;
   padding: 20px;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: #f9f9f9;
 }
 
-.form-container h2 {
+h1 {
   text-align: center;
   margin-bottom: 20px;
 }
@@ -16,41 +16,36 @@
   margin-bottom: 15px;
 }
 
-.form-group label {
+label {
   display: block;
-  font-weight: bold;
   margin-bottom: 5px;
+  font-weight: bold;
 }
 
-.form-group input {
+input {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
-button {
+.form-button {
   width: 100%;
   padding: 10px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-button:hover {
+.form-button:hover {
   background-color: #0056b3;
 }
 
-.success {
+.message {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
   color: green;
-  text-align: center;
-  margin-top: 10px;
-}
-
-.error {
-  color: red;
-  text-align: center;
-  margin-top: 10px;
 }

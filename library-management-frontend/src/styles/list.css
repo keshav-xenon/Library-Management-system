@@ -1,47 +1,67 @@
 .list-container {
+  max-width: 800px;
+  margin: 50px auto;
   padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
   background-color: #f9f9f9;
 }
 
-.list {
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.message {
+  text-align: center;
+  font-weight: bold;
+  color: green;
   margin-top: 20px;
 }
 
-.list-item {
-  background: white;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.requests-list {
+  margin-top: 20px;
 }
 
-.list-item p {
-  margin: 5px 0;
+.requests-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.actions {
-  margin-top: 10px;
+.requests-table th,
+.requests-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
 }
 
-.actions button {
-  margin-right: 10px;
-  padding: 8px 12px;
+.requests-table th {
+  background-color: #007bff;
+  color: white;
+}
+
+.approve-button {
+  padding: 5px 10px;
+  background-color: #28a745;
+  color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.actions button:first-child {
-  background-color: #28a745;
-  color: white;
+.approve-button:hover {
+  background-color: #218838;
 }
 
-.actions button:last-child {
+.reject-button {
+  padding: 5px 10px;
   background-color: #dc3545;
   color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.actions button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.reject-button:hover {
+  background-color: #c82333;
 }

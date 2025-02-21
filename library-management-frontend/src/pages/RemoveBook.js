@@ -1,27 +1,36 @@
 import React, { useState } from "react";
-import { removeBook } from "../services/api"; // Import the removeBook function
+import axios from "axios";
 import "../styles/form.css";
 
-function RemoveBook() {
+const RemoveBook = () => {
   const [isbn, setIsbn] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleRemove = async (e) => {
+  const handleRemoveBook = async (e) => {
     e.preventDefault();
     try {
-      const response = await removeBook(isbn); // Use the removeBook function
-      setMessage(response.message);
-    } catch (err) {
-      setMessage(err.error || "Failed to remove book");
+      const response = await axios.delete(
+        `http://localhost:8080/admin/remove-book/${isbn}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage(
+        error.response?.data?.error || "Failed to remove the book. Try again."
+      );
     }
   };
 
   return (
     <div className="form-container">
-      <h2>Remove Book</h2>
-      <form onSubmit={handleRemove}>
+      <h1>Remove Book</h1>
+      <form onSubmit={handleRemoveBook}>
         <div className="form-group">
-          <label>ISBN</label>
+          <label>ISBN:</label>
           <input
             type="text"
             value={isbn}
@@ -29,11 +38,13 @@ function RemoveBook() {
             required
           />
         </div>
-        <button type="submit">Remove Book</button>
-        {message && <p>{message}</p>}
+        <button type="submit" className="form-button">
+          Remove Book
+        </button>
       </form>
+      {message && <p className="message">{message}</p>}
     </div>
   );
-}
+};
 
 export default RemoveBook;

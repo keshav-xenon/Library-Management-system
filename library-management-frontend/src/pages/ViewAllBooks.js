@@ -1,80 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import api from '../services/api';
-import '../styles/books.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "../styles/books.css"; // Add custom styles for the books page
 
 const ViewAllBooks = () => {
   const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
+    // Fetch all books from the backend
+    const fetchBooks = async () => {
+      const email = localStorage.getItem("email"); // Reader email from local storage
+      try {
+        const response = await axios.get("http://localhost:8080/reader/search-book", {
+          headers: {
+            Authorization: `Bearer ${email}`, // Pass email as Bearer token
+          },
+        });
+        setBooks(response.data);
+      } catch (error) {
+        setMessage(
+          error.response?.data?.error || "Failed to fetch books. Try again."
+        );
+      }
+    };
+
     fetchBooks();
   }, []);
 
-  const fetchBooks = async () => {
-    try {
-      const response = await api.get('/reader/all-books');
-      setBooks(response.data);
-      setError('');
-    } catch (err) {
-      setError('Failed to fetch books');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleIssueRequest = async (isbn) => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (!user) {
-        setError('Please login to raise an issue request');
-        return;
-      }
-
-      await api.post('/reader/raise-issue-request', {
-        bookID: isbn,
-        readerID: user.email
-      });
-
-      setSuccess('Issue request raised successfully!');
-      setError('');
-    } catch (err) {
-      setError('Failed to raise issue request');
-      setSuccess('');
-    }
-  };
-
-  if (loading) return <div className="loading">Loading books...</div>;
-
   return (
     <div className="books-container">
-      <h2>Available Books</h2>
-      
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">{success}</div>}
-
-      <div className="books-grid">
-        {books.map((book) => (
-          <div key={book.ISBN} className="book-card">
-            <div className="book-info">
-              <h3>{book.Title}</h3>
-              <p><strong>Authors:</strong> {book.Authors}</p>
-              <p><strong>Publisher:</strong> {book.Publisher}</p>
-              <p><strong>Version:</strong> {book.Version}</p>
-              <p><strong>Available Copies:</strong> {book.AvailableCopies}</p>
-            </div>
-            <div className="book-actions">
-              <button
-                onClick={() => handleIssueRequest(book.ISBN)}
-                disabled={book.AvailableCopies === 0}
-                className="issue-button"
-              >
-                {book.AvailableCopies === 0 ? 'Not Available' : 'Request Issue'}
-              </button>
-            </div>
-          </div>
-        ))}
+      <h1>All Books</h1>
+      {message && <p className="message">{message}</p>}
+      <div className="books-list">
+        {books.length > 0 ? (
+          <table className="books-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Publisher</th>
+                <th>Available Copies</th>
+              </tr>
+            </thead>
+            <tbody>
+              {books.map((book) => (
+                <tr key={book.ISBN}>
+                  <td>{book.Title}</td>
+                  <td>{book.Authors}</td>
+                  <td>{book.Publisher}</td>
+                  <td>{book.AvailableCopies}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>No books available</p>
+        )}
       </div>
     </div>
   );
